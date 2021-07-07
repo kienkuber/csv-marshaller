@@ -21,7 +21,7 @@ public class CsvMarshaller<T> implements Marshaller<T> {
         List<Field> fields = extractCsvFields(values.get(0));
         List<String> headers = fields.stream().map(this::getFieldName)
                 .collect(Collectors.toList());
-        List<List<String>> cellValues = getValue(values, fields);
+        List<List<String>> cellValues = getAllCellValues(values, fields);
         writeToFile(os, headers, cellValues);
     }
 
@@ -57,15 +57,15 @@ public class CsvMarshaller<T> implements Marshaller<T> {
 
     }
 
-    private List<List<String>> getValue(List<T> values, List<Field> fields) {
+    private List<List<String>> getAllCellValues(List<T> values, List<Field> fields) {
         List<String> fieldNames = fields.stream().map(Field::getName)
                 .collect(Collectors.toList());
         return values.stream()
-                .map(e -> getValuesForOne(e, fieldNames))
+                .map(e -> getCellValuesForOneRow(e, fieldNames))
                 .collect(Collectors.toList());
     }
 
-    private List<String> getValuesForOne(T value, List<String> fieldNames) {
+    private List<String> getCellValuesForOneRow(T value, List<String> fieldNames) {
         return Arrays.stream(value.getClass().getDeclaredFields())
                 .filter(e -> fieldNames.contains(e.getName()))
                 .map(e -> {
